@@ -49,7 +49,7 @@ darray_##name darray_##name##_init(data_type* data, size_t count) \
 #define DArray_Push(name, data_type) \
 void darray_##name##_push(darray_##name *darray, data_type d) \
 { \
-    if (darray->size > (darray->capacity - 5)) \
+    if (darray->capacity == 0 || darray->size > (darray->capacity - 5)) \
     { \
         if (darray->capacity == 0) darray->capacity = 5; \
         darray->capacity = darray->capacity * 2; \
@@ -92,7 +92,7 @@ data_type darray_##name##_remove(darray_##name *darray, size_t idx) \
         darray->data[i] = darray->data[j]; \
         i += 1; j += 1; \
     } \
-    darray->size = darray->size - 1;\
+    darray->size = darray->size - 1; \
     return val; \
 } 
 
