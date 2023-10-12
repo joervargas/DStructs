@@ -74,12 +74,27 @@ data_type darray_##name##_pop(darray_##name *darray) \
     return d; \
 }
 
-// #define DArray_Get(name, data_type) \
-// data_type darray_##name##_get(darray_##name *darray, unsigned int idx) \
-// { \
-//     /* TODO: Panic if not in range */ \
-//     return darray->data[idx]; \
-// } 
+#define DArray_Remove(name, data_type) \
+data_type darray_##name##_remove(darray_##name *darray, size_t idx) \
+{ \
+    if (idx < 0 || idx >= darray->size) \
+    { \
+        /*TODO: exit with error*/ \
+        return 0; \
+    } \
+    if (idx == (darray->size - 1)) \
+    { return darray_##name##_pop(darray); } \
+    \
+    data_type val = darray->data[idx]; \
+    size_t i = idx; size_t j = idx + 1; \
+    while(j < darray->size) \
+    { \
+        darray->data[i] = darray->data[j]; \
+        i += 1; j += 1; \
+    } \
+    darray->size = darray->size - 1;\
+    return val; \
+} 
 
 #define DArray_Declare(name, data_type) \
     DArray_Struct(name, data_type) \
@@ -87,6 +102,7 @@ data_type darray_##name##_pop(darray_##name *darray) \
     DArray_Init(name, data_type) \
     DArray_Free(name, data_type) \
     DArray_Push(name, data_type) \
-    DArray_Pop(name, data_type);
+    DArray_Pop(name, data_type) \
+    DArray_Remove(name, data_type);
 
 #endif // DARRAY_H
