@@ -55,5 +55,6 @@ build/
 Build/
 src/
 
+main.c
 main.cpp
 /CMakeLists.txt

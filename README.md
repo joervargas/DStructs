@@ -10,7 +10,7 @@ Work in progress.
 
 ## Example
 
-**DArray** is a dynamically allocated array. Like vector in c++. Can be found in ***DArray.h*** 
+**DArray** is a dynamically allocated stack array. Like vector in c++. Can be found in ***DArray.h*** 
 
     // DArray_Declare(name, data_type)
 >   Where **name** is the identifier to add to the data structure.

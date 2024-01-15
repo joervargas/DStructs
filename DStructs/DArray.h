@@ -66,26 +66,23 @@ void darray_##name##_push(darray_##name *darray, data_type val) \
 }
 
 #define DArray_Pop(name, data_type) \
-data_type darray_##name##_pop(darray_##name *darray) \
+int darray_##name##_pop(darray_##name *darray, data_type *output) \
 { \
-    data_type d = darray->data[darray->size - 1]; \
+    if (darray == NULL) return 0; \
+    if (darray->size == 0) return 0; \
+    if (output != NULL) { *output = darray->data[darray->size - 1]; } \
     darray->data[darray->size - 1] = 0; \
     darray->size = darray->size - 1; \
-    return d; \
+    return 1; \
 }
 
 #define DArray_Remove(name, data_type) \
-data_type darray_##name##_remove(darray_##name *darray, size_t idx) \
+int darray_##name##_remove(darray_##name *darray, size_t idx, data_type *output) \
 { \
-    if (idx < 0 || idx >= darray->size) \
-    { \
-        /*TODO: exit with error*/ \
-        return 0; \
-    } \
-    if (idx == (darray->size - 1)) \
-    { return darray_##name##_pop(darray); } \
-    \
-    data_type val = darray->data[idx]; \
+    if (darray == NULL) { return 0; } \
+    if (idx < 0 || idx >= darray->size) { return 0; } \
+    if (idx == (darray->size - 1)) { return darray_##name##_pop(darray, output); } \
+    if (output != NULL) { *output = darray->data[idx]; } \
     size_t i = idx; size_t j = idx + 1; \
     while(j < darray->size) \
     { \
@@ -93,19 +90,15 @@ data_type darray_##name##_remove(darray_##name *darray, size_t idx) \
         i += 1; j += 1; \
     } \
     darray->size = darray->size - 1; \
-    return val; \
+    return 1; \
 }
 
 #define DArray_Insert(name, data_type) \
-void darray_##name##_insert(darray_##name *darray, data_type val, size_t idx) \
+int darray_##name##_insert(darray_##name *darray, data_type val, size_t idx) \
 { \
-    if (idx == (darray->size)) \
-    { darray_##name##_push(darray, val); } \
-    if (idx < 0 || idx >= darray->size) \
-    { \
-        /*TODO: exit with error*/ \
-        return; \
-    } \
+    if (darray == NULL) { return 0; } \
+    if (idx < 0 || idx >= darray->size) { return 0; } \
+    if (idx == (darray->size)) { darray_##name##_push(darray, val); return 1; } \
     if (darray->capacity == 0 || darray->size > (darray->capacity - 5)) \
     { \
         if (darray->capacity == 0) darray->capacity = 5; \
@@ -130,7 +123,8 @@ void darray_##name##_insert(darray_##name *darray, data_type val, size_t idx) \
         darray->data[idx] = val; \
     } \
     darray->size = darray->size + 1; \
-} \
+    return 1; \
+}
 
 #define DArray_Append(name, data_type) \
 void darray_##name##_append(darray_##name *darray, data_type *values, size_t count) \
@@ -156,14 +150,16 @@ void darray_##name##_append(darray_##name *darray, data_type *values, size_t cou
 }
 
 #define DArray_Slice(name, data_type) \
-size_t darray_##name##_slice(darray_##name *darray, size_t first_idx, size_t second_idx, data_type *slice) \
+int darray_##name##_slice(darray_##name *darray, size_t first_idx, size_t second_idx, data_type *slice, size_t* slice_count) \
 { \
-    if(first_idx <= 0 || first_idx > darray->size) { *slice = 0; return 0; } \
-    if(second_idx <= 0 || second_idx > darray->size) { *slice = 0; return 0; } \
-    if(first_idx > second_idx) { slice = 0; return 0; } \
+    if(darray == NULL || slice == NULL) { return 0; } \
+    if(first_idx <= 0 || first_idx > darray->size) { return 0; } \
+    if(second_idx <= 0 || second_idx > darray->size) { return 0; } \
+    if(first_idx > second_idx) { return 0; } \
     if(first_idx == second_idx) \
     { \
-        *slice = darray->data[first_idx]; \
+        slice = &darray->data[first_idx]; \
+        *slice_count = 1; \
         return 1; \
     } \
     size_t count = second_idx - first_idx; \
@@ -174,20 +170,17 @@ size_t darray_##name##_slice(darray_##name *darray, size_t first_idx, size_t sec
         slice[slice_idx] = darray->data[i]; \
         slice_idx = slice_idx + 1; \
     } \
-    return count; \
+    *slice_count = count; \
+    return 1; \
 }
 
-// TODO: text this
+// TODO: test this
 #define DArray_Slice_Insert(name, data_type) \
-void darray_##name##_slice_insert(darray_##name *darray, size_t first_idx, data_type *values, size_t count) \
+int darray_##name##_slice_insert(darray_##name *darray, size_t first_idx, data_type *values, size_t count) \
 { \
-    if (first_idx == (darray->size)) \
-    { darray_##name##_append(darray, values, count); } \
-    if (first_idx < 0 || first_idx >= darray->size) \
-    { \
-        /*TODO: exit with error*/ \
-        return; \
-    } \
+    if (darray == NULL || values == NULL) { return 0; } \
+    if (first_idx < 0 || first_idx >= darray->size) { return 0; } \
+    if (first_idx == (darray->size)) { darray_##name##_append(darray, values, count); return 1; } \
     if (darray->capacity == 0 || darray->size > (darray->capacity - 5)) \
     { \
         if (darray->capacity == 0) darray->capacity = 5; \
@@ -218,26 +211,29 @@ void darray_##name##_slice_insert(darray_##name *darray, size_t first_idx, data_
         } \
     } \
     darray->size = darray->size + count; \
+    return 1; \
 }
 
 // TODO: test this
 #define DArray_Slice_Remove(name, data_type) \
-size_t darray_##name##_slice_remove(darray_##name *darray, size_t first_idx, size_t second_idx, data_type* slice) \
+int darray_##name##_slice_remove(darray_##name *darray, size_t first_idx, size_t second_idx, data_type* slice, size_t *slice_count) \
 { \
-    if(first_idx <= 0 || first_idx > darray->size) { *slice = 0; return 0; } \
-    if(second_idx <= 0 || second_idx > darray->size) { *slice = 0; return 0; } \
-    if(first_idx > second_idx) { slice = 0; return 0; } \
-    size_t count = second_idx - first_idx; \
-    if(count > darray->size) \
-    { \
-        count = darray->size; \
-        slice = darray->data; \
-        darray_##name##_free(darray); \
-    } \
+    if(darray == 0) { return 0; } \
+    if(first_idx <= 0 || first_idx > darray->size) { return 0; } \
+    if(second_idx <= 0 || second_idx > darray->size) { return 0; } \
+    if(first_idx > second_idx) { return 0; } \
     if(first_idx == second_idx) \
     { \
-        data_type value = darray_##name##_remove(darray, first_idx); \
-        slice = &value; \
+        int result = darray_##name##_remove(darray, first_idx, slice); \
+        if (slice_count != NULL) {*slice_count = 1; } \
+        return result; \
+    } \
+    size_t count = second_idx - first_idx; \
+    if(count >= darray->size) \
+    { \
+        if(slice_count != NULL) { *slice_count = darray->size; } \
+        slice = darray->data; \
+        darray_##name##_free(darray); \
         return 1; \
     } \
     slice = (data_type*)malloc(count * darray->type_size); \
@@ -252,7 +248,8 @@ size_t darray_##name##_slice_remove(darray_##name *darray, size_t first_idx, siz
         darray->data[i - count] = darray->data[i]; \
     } \
     darray->size = darray->size - count; \
-    return count; \
+    *slice_count = count; \
+    return 1; \
 }
 
 #define DArray_Declare(name, data_type) \
