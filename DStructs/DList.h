@@ -20,22 +20,29 @@ typedef struct dlist_##name { \
 } dlist_##name;
 
 #define DList_Node_New(name, data_type) \
-dlist_node_##name dlist_node_##name##_new(data_type data, dlist_node_##name* head, dlist_node_##name* tail) \
+dlist_node_##name dlist_node_##name##_new(data_type data) \
 { \
     dlist_node_##name node; \
-    node->data = data; \
-    node->head = head; \
-    node->tail = tail; \
+    node.data = data; \
+    node.head = NULL; \
+    node.tail = NULL; \
+    return node; \
+}
+
+#define DList_Node_Init(name, data_type) \
+dlist_node_##name dlist_node_##name##_init(data_type data, dlist_node_##name* next, dlist_node_##name* prev) \
+{ \
+    dlist_node_##name node; \
+    node.data = data; \
+    node.next = next; \
+    node.prev = prev; \
     return darray; \
 }
 
-#define DList_Node_New_Uninit(name, data_type) \
-dlist_node_##name dlist_node_##name##_new_unint(dlist_node_##name* head, dlist_node_##name* tail) \
+#define DList_Node_Link(name, data_type) \
+void dlist_node_##name##_link(dlist_node_##name* first, dlist_node_##name* second) \
 { \
-    dlist_node_##name node; \
-    node->head = head; \
-    node->tail = tail; \
-    return darray; \
+    if(first->next == NULL && second->prev == NULL) { first_node->next = second; second->prev = first; } \
 }
 
 #define DList_New(name, data_type) \
