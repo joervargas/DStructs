@@ -3,35 +3,64 @@
 Header only library for creating Data Structures in C.
 Work in progress.
 
-- Create DataStructures in C quickly.
+- Create Data Structures in C quickly.
 - Header only. Use only what you need. Headers found in DStructs folder.
 - Easy to use.
 
+## **DArray** 
+***DArray*** is a dynamically allocated stack style array. Like vector in C++. Can be found in ***DArray.h*** 
 
-## Example
-
-**DArray** is a dynamically allocated stack array. Like vector in c++. Can be found in ***DArray.h*** 
-
-    // DArray_Declare(name, data_type)
+    DArray_Declare(name, data_type);
 >   Where **name** is the identifier to add to the data structure.
 >   Where **data_type** is the data type this data structure will work with.
 
-    // int example
-    DArray_Declare(i, int);
->   Creates the struct ***darray_i*** along with functions to create, pop, push and free ***darray_i***
 
-    darray_i ivalues = darray_i_new(); // creates a new and empty darray_i
-    darray_i_push(&ivalues, 23); // pushes a value at the end of the provided darray_i
-    int val = darray_i_pop(&ivalues); // returns the value at the end of darray_i and removes it from data[]
-    darray_i_free(&ivalues); // frees all allocated memory
+For example a float DArray is declared as follows
 
->   darray_i has members size, capacity, type_size, and data[]. <br>
->   - data: an array of data_type. In this example int.
->   - size: the size of the data array. (Number of elements)
->   - capacity: the size of the allocated memory.
->   - type_size: size of the data_type. In this example sizeof(int)
+    DArray_Declare(f, float);
+>   Creates the struct ***darray_f*** along with functions to create, pop, push and free ***darray_f***
 
-    for(int = 0; i < darray_i.size; i++)
-    {
-        printf("%d\n", darray.data[i]);
-    }
+>   darray_f will have members size, capacity, type_size, and data[]. <br>
+>   - data: an array of data_type. In this example float.
+>   - size: the size_t count of values in the data array. (Number of elements)
+>   - capacity: the size_t count of the allocated memory available.
+>   - type_size: size of the data_type. In this example sizeof(float)
+<br><br>
+
+    darray_f fvalues = darray_f_new();
+> Creates a new and empty darray_f. Dynamically allocates memory.
+
+    darray_f ivalues = darray_f_init(float* data, size_t count)
+> Creates a new populated darray_f struct with values copied from float* data of size_t count. Dynamically allocates memory.
+
+    darray_f_free(darray_f *darray);
+> Frees all allocated memory
+
+    darray_f_push(darray_f *darray, data_type val);
+> Pushes a val at the end of the provided darray_f
+
+    int result = darray_f_pop(darray_f *darray, float *output);
+> Removes the last value of darray_f->data. <br>
+ If an output pointer is given, the value is stored there. <br>
+ Returns 0 on failure 1 on success.
+
+    int result = darray_f_remove(darray_f *darray, size_t idx, float *output)
+> Removes the value at the given index. <br>
+ If an output pointer is supplied, the value is stored there. <br>
+ Returns 0 on failure, 1 on success.
+
+    int result = darray_f_insert(darray_f *darray, size_t idx, float val)
+> Inserts a value at the given index (idx). <br>
+Returns 0 on failure, 1 on success
+
+    darray_f_append(darray_f *darray, float *values, size_t count);
+> Appends an array of data_type (float in this example) with a count of size_t to the end of darray->data. <br>
+
+    int result = darray_f_slice(darray_f *darray, size_t first_idx, float *slice, size_t slice_size);
+> Copies a slice of values from darray->data to an array of data_type (float in this example) at the index (first_idx). <br> Returns 0 on failure, 1 on success.
+
+    int result = darray_f_slice_insert(darray_f *darray, size_t first_idx, float *slice, size_t slice_size);
+> Inserts an array (slice) of data_type (float in this example) into darray->data at index (first_idx). <br> Returns 0 on failure, 1 on success.
+
+    int darray_f_slice_remove(darray_f *darray, size_t first_idx, float* slice, size_t slice_size);
+> Removes a slice of values from darray->data  and puts them in an array (slice) if provided. <br> Returns 0 on failure, 1 on success.
