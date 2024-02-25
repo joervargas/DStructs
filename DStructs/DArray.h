@@ -208,7 +208,6 @@ int darray_##name##_slice_insert(darray_##name *darray, size_t first_idx, data_t
     return 1; \
 }
 
-// TODO: test this
 #define DArray_Slice_Remove(name, data_type) \
 int darray_##name##_slice_remove(darray_##name *darray, size_t first_idx, data_type* slice, size_t slice_size) \
 { \

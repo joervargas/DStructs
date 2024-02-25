@@ -11,7 +11,7 @@ Work in progress.
 ***DArray*** is a dynamically allocated stack style array. Like vector in C++. Can be found in ***DArray.h*** 
 
     DArray_Declare(name, data_type);
->   Where **name** is the identifier to add to the data structure.
+>   Where **name** is the identifier to give to the data structure.<br>
 >   Where **data_type** is the data type this data structure will work with.
 
 
@@ -24,7 +24,7 @@ For example a float DArray is declared as follows
 >   - data: an array of data_type. In this example float.
 >   - size: the size_t count of values in the data array. (Number of elements)
 >   - capacity: the size_t count of the allocated memory available.
->   - type_size: size of the data_type. In this example sizeof(float)
+>   - type_size: size of the data_type in bytes. In this example sizeof(float)
 <br><br>
 
     darray_f fvalues = darray_f_new();
@@ -64,3 +64,30 @@ Returns 0 on failure, 1 on success
 
     int darray_f_slice_remove(darray_f *darray, size_t first_idx, float* slice, size_t slice_size);
 > Removes a slice of values from darray->data  and puts them in an array (slice) if provided. <br> Returns 0 on failure, 1 on success.
+<br><br>
+
+## **DSList**
+***DSList*** is a singally-linked list. Can be found in ***DSList.h*** 
+
+    DSList_Declare(name, data_type);
+>   Where **name** is the identifier to give to the data structure.<br>
+>   Where **data_type** is the data type this data structure will work with.
+
+For example a float DSList is declared as follows
+
+    DSList_Declare(f, float);
+>   Creates the struct ***dslist_f*** along with functions to create insert, search, and free ***dslist_f***. It will also create a corresponding node structure ***dslist_node_f***.
+
+>  **dslist_f**
+>   - darray_f will have members size, type_size, and head and tail nodes of type ***dslist_node_f***. <br>
+>   - head: **dslist_node_f** node at the beginning of a list.
+>   - tail: **dslist_node_f** node at the end of a list.
+>   - size: the size_t count of values in the singly linked list. (Number of elements).
+>   - type_size: size of the data_type in bytes. In this example sizeof(float).
+<br><br>
+
+>  **dslist_node_f**
+>   - dslist_node_f will have a data field and a next node.
+>   - data: a field of data_type(float in this example).
+>   - next: **dslist_node_f** that points to the next node in the list chain.
+<br>
