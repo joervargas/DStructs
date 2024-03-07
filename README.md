@@ -76,18 +76,18 @@ Returns 0 on failure, 1 on success
 For example a float DSList is declared as follows
 
     DSList_Declare(f, float);
->   Creates the struct ***dslist_f*** along with functions to create insert, search, and free ***dslist_f***. It will also create a corresponding node structure ***dslist_node_f***.
+>   Creates the struct ***dslist_f*** along with functions to create insert, search, and free ***dslist_f***. It will also create a corresponding node structure ***dslist_f_node***.
 
 >  **dslist_f**
->   - darray_f will have members size, type_size, and head and tail nodes of type ***dslist_node_f***. <br>
->   - head: **dslist_node_f** node at the beginning of a list.
->   - tail: **dslist_node_f** node at the end of a list.
+>   - darray_f will have members size, type_size, and head and tail nodes of type ***dslist_f_node***. <br>
+>   - head: **dslist_f_node** node at the beginning of a list.
+>   - tail: **dslist_f_node** node at the end of a list.
 >   - size: the size_t count of values in the singly linked list. (Number of elements).
 >   - type_size: size of the data_type in bytes. In this example sizeof(float).
 <br><br>
 
->  **dslist_node_f**
->   - dslist_node_f will have a data field and a next node.
+>  **dslist_f_node**
+>   - dslist_f_node will have a data field and a next node.
 >   - data: a field of data_type(float in this example).
->   - next: **dslist_node_f** that points to the next node in the list chain.
+>   - next: **dslist_f_node** that points to the next node in the list chain.
 <br>
