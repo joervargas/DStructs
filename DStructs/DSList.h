@@ -364,9 +364,8 @@ int dslist_##name##_emplace(dslist_##name* self, dslist_##name* other, size_t in
    if(index < 0 || index > self->size) { return 0; } \
    if(index == 0) { dslist_##name##_prepend(self, other); return 1; } \
    if(index == self->size - 1) { dslist_##name##_append(self, other); return 1; } \
-   dslist_##name##_node* node = NULL; \
-   if(!dslist_##name##_get_node(self, index, node)) \
-   { return 0; } \
+   dslist_##name##_node* node = dslist_##name##_get_node(self, index); \
+   if(!node) { return 0; } \
    other->tail->next = node->next; \
    node->next = other->head; \
    self->size += other->size; \
@@ -401,16 +400,16 @@ dslist_##name dslist_##name##_from_array(const data_type* input, size_t count) \
 } \
 
 #define DSList_Insert_Array_Front(name, data_type) \
-void dslist_##name##_insert_array_front(dslist_##name* self, const data_type** arr, size_t count) \
+void dslist_##name##_insert_array_front(dslist_##name* self, data_type** arr, size_t count) \
 { \
-    dslist_##name other = dslist_##name##_frome_array(*arr, count); \
+    dslist_##name other = dslist_##name##_from_array(*arr, count); \
     dslist_##name##_prepend(self, &other); \
 } \
 
 #define DSList_Insert_Array_End(name, data_type) \
-void dslist_##name##_insert_array_end(dslist_##name* self, const data_type** arr, size_t count) \
+void dslist_##name##_insert_array_end(dslist_##name* self, data_type** arr, size_t count) \
 { \
-    dslist_##name other = dslist_##name##_frome_array(*arr, count); \
+    dslist_##name other = dslist_##name##_from_array(*arr, count); \
     dslist_##name##_append(self, &other); \
 } \
 
@@ -420,7 +419,7 @@ int dslist_##name##_insert_array_at(dslist_##name* self, data_type** arr, size_t
     if(self == NULL || arr == NULL) { return 0; } \
     if(index == 0) { dslist_##name##_insert_array_front(self, arr, count); return 1; } \
     if(index == self->size - 1) { dslist_##name##_insert_array_end(self, arr, count); return 1; } \
-    dslist_##name other = dslist_##name##_frome_array(*arr, count); \
+    dslist_##name other = dslist_##name##_from_array(*arr, count); \
     dslist_##name##_emplace(self, &other, index); \
     return 1; \
 } \
