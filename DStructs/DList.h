@@ -31,11 +31,30 @@ void dlist_##name##_node_free(dlist_##name##_node* self) \
 } \
 
 #define DList_Node_Free_Chain_After(name, data_type) \
-void dlist_##name##_node_free_chain_after(dslist_node_##name* node, size_t* count) \
+void dlist_##name##_node_free_chain_after(dlist_##name##_node* self, size_t* count) \
 { \
-    if(node->next) { dlist_##name##_node_free_chain(node->next, count); } \
-    dlist_##name##_node_free(node); \
+    if(self->next) { dlist_##name##_node_free_chain_after(self->next, count); } \
+    dlist_##name##_node_free(self); \
     if(count) { *count += 1; } \
+} \
+
+#define DList_Node_Free_Chain_Before(name, data_type) \
+void dlist_##name##_node_free_chain_before(dslist_##name##_node* self, size_t* count) \
+{ \
+    if(self->prev) { dlist_##name##_node_free_chain_before(self->prev, count); } \
+    dlist_##name##_node_free(self); \
+    if(count) { *count += 1; } \
+} \
+
+#define DList_Node_Free_Chain(name, data_type) \
+void dlist_##name##_node_free_chain(dlist_##name* self, size_t* count) \
+{ \
+    if(self->prev) \
+    { \
+        dlist_##name##_node_free_chain(self, count); \
+    } else { \
+        dlist_##name##_node_free_chain_after(self, count); \
+    } \
 } \
 
 #define DList_Struct(name, data_type) \
@@ -50,10 +69,11 @@ typedef struct dlist_##name { \
 dlist_##name dlist_##name##_new() \
 { \
     dlist_##name self; \
-    list.size = 0; \
-    list.type_size = sizeof(data_type); \
-    list.head = list.tail = &dlist_##name##_node##_new_uninit(NULL, NULL) \
-    return list; \
+    self.size = 0; \
+    self.type_size = sizeof(data_type); \
+    self.head = NULL; \
+    self.tail = NULL; \
+    return self; \
 }
 
 #define DList_Insert_End(name, data_type) \

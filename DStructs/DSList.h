@@ -123,138 +123,12 @@ void dslist_##name##_swap(dslist_##name *self, dslist_##name##_node *first, dsli
     } \
 } \
 
-#define DSList_Insert_End(name, data_type) \
-void dslist_##name##_insert_end(dslist_##name *self, data_type val) \
-{ \
-    dslist_##name##_node* new_node = dslist_##name##_node_new(val, NULL); \
-    if(self->head == NULL && self->tail == NULL) \
-    { \
-        self->head = new_node; \
-        self->tail = new_node; \
-        self->size += 1; \
-        return; \
-    } \
-    self->tail->next = new_node; \
-    self->tail = new_node; \
-    self->size += 1; \
-}
-
-#define DSList_Insert_Front(name, data_type) \
-void dslist_##name##_insert_front(dslist_##name *self, data_type val) \
-{ \
-    dslist_##name##_node* new_node = dslist_##name##_node_new(val, self->head); \
-    if(self->head == NULL && self->tail == NULL) \
-    { \
-        self->head = new_node; \
-        self->tail = new_node; \
-        self->size += 1; \
-        return; \
-    } \
-    dslist_##name##_node* old_head = self->head; \
-    self->head = new_node; \
-    self->head->next = old_head; \
-    self->size += 1; \
-} \
-
-#define DSList_Insert_At(name, data_type) \
-int dslist_##name##_insert_at(dslist_##name *self, size_t idx, data_type val) \
-{ \
-    if(idx < 0 || idx > self->size) return 0; \
-    if(idx == 0) { dslist_##name##_insert_front(self, val); return 1; } \
-    if(idx == self->size) { dslist_##name##_insert_end(self, val); return 1; } \
-    size_t index = 0; \
-    dslist_##name##_node* prev = NULL; \
-    for(dslist_##name##_node* cur = self->head; cur; cur = cur->next) \
-    { \
-       if(index == idx) \
-       { \
-            dslist_##name##_node* node = dslist_##name##_node_new(val, cur); \
-            prev->next = node; \
-            self->size += 1; \
-            return 1; \
-       } \
-       index +=1; \
-       prev = cur; \
-    } \
-    return 0; \
-} \
-
-#define DSList_Remove_End(name, data_type) \
-void dslist_##name##_remove_end(dslist_##name *self, data_type *output) \
-{ \
-    if(self == NULL) return; \
-    if(output) { *output = self->tail->data; } \
-    if(self->head == self->tail) \
-    { \
-        dslist_##name##_node_free(self->tail); \
-        self->head = NULL; \
-        self->tail = NULL; \
-        self->size = 0; \
-        return; \
-    } \
-    dslist_##name##_node* prev = NULL; \
-    for(dslist_##name##_node* cur = self->head; cur != NULL; cur = cur->next) \
-    { \
-        if(cur == self->tail) \
-        { \
-            prev->next = NULL; \
-            self->tail = prev; \
-            self->size -= 1; \
-            dslist_##name##_node_free(cur); \
-            return; \
-        } \
-        prev = cur; \
-    } \
-} \
-
-#define DSList_Remove_Front(name, data_type) \
-void dslist_##name##_remove_front(dslist_##name *self, data_type *output) \
-{ \
-    if(self == NULL) return; \
-    if(output) { *output = self->head->data; } \
-    if(self->head == self->tail) \
-    { \
-        dslist_##name##_node_free(self->head); \
-        self->head = NULL; \
-        self->tail = NULL; \
-        self->size = 0; \
-        return; \
-    } \
-    dslist_##name##_node* node = self->head; \
-    self->head = node->next; \
-    dslist_##name##_node_free(node); \
-    self->size -= 1; \
-} \
-
-#define DSList_Remove_At(name, data_type) \
-int dslist_##name##_remove_at(dslist_##name *self, size_t idx, data_type* output) \
-{ \
-    if(self == NULL) { return 0; } \
-    if( idx < 0 || idx > self->size ) {} \
-    if( idx == 1 ) { dslist_##name##_remove_front(self, output); return 1; } \
-    if( idx == self->size ) { dslist_##name##_remove_end(self, output); return 1; } \
-    size_t index = 0; \
-    dslist_##name##_node* prev = NULL; \
-    for(dslist_##name##_node* cur = self->head; cur; cur = cur->next) \
-    { \
-        if(index == idx) \
-        { \
-            prev->next = cur->next; \
-            dslist_##name##_node_free(cur); \
-            self->size -=1; \
-            return 1; \
-        } \
-        index += 1; \
-        prev = cur; \
-    } \
-    return 0; \
-} \
-
 #define DSList_Get_Node(name, data_type) \
 dslist_##name##_node* dslist_##name##_get_node(dslist_##name *self, size_t idx) \
 { \
+    if(idx < 0 || idx > self->size) return NULL; \
     size_t count = 0; \
-    for(dslist_##name##_node* cur = self->head; cur != NULL; cur = cur->next) \
+    for(dslist_##name##_node* cur = self->head; cur; cur = cur->next) \
     { \
         if(count == idx) { return cur; } \
         count++; \
@@ -325,6 +199,116 @@ int dslist_##name##_osearch_index(dslist_##name *self, data_type val, size_t* ou
     return 0; \
 } \
 
+#define DSList_Insert_End(name, data_type) \
+void dslist_##name##_insert_end(dslist_##name *self, data_type val) \
+{ \
+    dslist_##name##_node* new_node = dslist_##name##_node_new(val, NULL); \
+    if(self->head == NULL && self->tail == NULL) \
+    { \
+        self->head = new_node; \
+        self->tail = new_node; \
+        self->size += 1; \
+        return; \
+    } \
+    self->tail->next = new_node; \
+    self->tail = new_node; \
+    self->size += 1; \
+}
+
+#define DSList_Insert_Front(name, data_type) \
+void dslist_##name##_insert_front(dslist_##name *self, data_type val) \
+{ \
+    dslist_##name##_node* new_node = dslist_##name##_node_new(val, self->head); \
+    if(self->head == NULL && self->tail == NULL) \
+    { \
+        self->head = new_node; \
+        self->tail = new_node; \
+        self->size += 1; \
+        return; \
+    } \
+    dslist_##name##_node* old_head = self->head; \
+    self->head = new_node; \
+    self->head->next = old_head; \
+    self->size += 1; \
+} \
+
+#define DSList_Insert_At(name, data_type) \
+int dslist_##name##_insert_at(dslist_##name *self, data_type val, size_t idx) \
+{ \
+    if(idx < 0 || idx > self->size) return 0; \
+    if(idx == 0) { dslist_##name##_insert_front(self, val); return 1; } \
+    if(idx == self->size) { dslist_##name##_insert_end(self, val); return 1; } \
+    dslist_##name##_node* prev = dslist_##name##_get_node(self, idx - 1); \
+    if(!prev) { return 0; } \
+    dslist_##name##_node* node = dslist_##name##_node_new(val, prev->next); \
+    prev->next = node; \
+    self->size += 1; \
+    return 1; \
+} \
+
+#define DSList_Remove_End(name, data_type) \
+void dslist_##name##_remove_end(dslist_##name *self, data_type *output) \
+{ \
+    if(self == NULL) return; \
+    if(output) { *output = self->tail->data; } \
+    if(self->head == self->tail) \
+    { \
+        dslist_##name##_node_free(self->tail); \
+        self->head = NULL; \
+        self->tail = NULL; \
+        self->size = 0; \
+        return; \
+    } \
+    dslist_##name##_node* prev = NULL; \
+    for(dslist_##name##_node* cur = self->head; cur != NULL; cur = cur->next) \
+    { \
+        if(cur == self->tail) \
+        { \
+            prev->next = NULL; \
+            self->tail = prev; \
+            self->size -= 1; \
+            dslist_##name##_node_free(cur); \
+            return; \
+        } \
+        prev = cur; \
+    } \
+} \
+
+#define DSList_Remove_Front(name, data_type) \
+void dslist_##name##_remove_front(dslist_##name *self, data_type *output) \
+{ \
+    if(self == NULL) return; \
+    if(output) { *output = self->head->data; } \
+    if(self->head == self->tail) \
+    { \
+        dslist_##name##_node_free(self->head); \
+        self->head = NULL; \
+        self->tail = NULL; \
+        self->size = 0; \
+        return; \
+    } \
+    dslist_##name##_node* node = self->head; \
+    self->head = node->next; \
+    dslist_##name##_node_free(node); \
+    self->size -= 1; \
+} \
+
+#define DSList_Remove_At(name, data_type) \
+int dslist_##name##_remove_at(dslist_##name *self, size_t idx, data_type* output) \
+{ \
+    if(self == NULL) { return 0; } \
+    if( idx < 0 || idx > self->size ) {} \
+    if( idx == 1 ) { dslist_##name##_remove_front(self, output); return 1; } \
+    if( idx == self->size ) { dslist_##name##_remove_end(self, output); return 1; } \
+    dslist_##name##_node* prev = dslist_##name##_get_node(self, idx - 1); \
+    if(!prev) { return 0; } \
+    dslist_##name##_node* node = prev->next; \
+    prev->next = prev->next->next; \
+    dslist_##name##_node_free(node); \
+    self->size -= 1; \
+    return 1; \
+} \
+
 #define DSList_Append(name, data_type) \
 void dslist_##name##_append(dslist_##name* self, dslist_##name* append_data) \
 { \
@@ -364,13 +348,13 @@ int dslist_##name##_emplace(dslist_##name* self, dslist_##name* other, size_t in
    if(index < 0 || index > self->size) { return 0; } \
    if(index == 0) { dslist_##name##_prepend(self, other); return 1; } \
    if(index == self->size - 1) { dslist_##name##_append(self, other); return 1; } \
-   dslist_##name##_node* node = dslist_##name##_get_node(self, index); \
-   if(!node) { return 0; } \
-   other->tail->next = node->next; \
-   node->next = other->head; \
-   self->size += other->size; \
-   dslist_##name##_zero_out(other); \
-   return 1; \
+   dslist_##name##_node* prev = dslist_##name##_get_node(self, index - 1); \
+   if(!prev) { return 0; } \
+    other->tail->next = prev->next; \
+    prev->next = other->head; \
+    self->size += other->size; \
+    dslist_##name##_zero_out(other); \
+    return 1; \
 } \
 
 #define DSList_To_Array(name, data_type) \
@@ -420,10 +404,8 @@ int dslist_##name##_insert_array_at(dslist_##name* self, data_type** arr, size_t
     if(index == 0) { dslist_##name##_insert_array_front(self, arr, count); return 1; } \
     if(index == self->size - 1) { dslist_##name##_insert_array_end(self, arr, count); return 1; } \
     dslist_##name other = dslist_##name##_from_array(*arr, count); \
-    dslist_##name##_emplace(self, &other, index); \
-    return 1; \
+    return dslist_##name##_emplace(self, &other, index); \
 } \
-
 
 #define DSList_Declare(name, data_type) \
     DSList_Node_Struct(name, data_type) \
@@ -436,15 +418,17 @@ int dslist_##name##_insert_array_at(dslist_##name* self, data_type** arr, size_t
     DSList_Zero_Out(name, data_type) \
     DSLIST_Validate_Size(name, data_type) \
     DSList_Swap(name, data_type) \
-    DSList_Insert_End(name, data_type) \
-    DSList_Insert_Front(name, data_type) \
-    DSList_Remove_End(name, data_type) \
-    DSList_Remove_Front(name, data_type) \
     DSList_Get_Node(name, data_type) \
     DSList_Search_Node(name, data_type) \
     DSList_OSearch_Node(name, data_type) \
     DSList_Search_Index(name, data_type) \
     DSList_OSearch_Index(name, data_type) \
+    DSList_Insert_End(name, data_type) \
+    DSList_Insert_Front(name, data_type) \
+    DSList_Insert_At(name, data_type) \
+    DSList_Remove_End(name, data_type) \
+    DSList_Remove_Front(name, data_type) \
+    DSList_Remove_At(name, data_type) \
     DSList_Append(name, data_type) \
     DSList_Prepend(name, data_type) \
     DSList_Emplace(name, data_type) \
