@@ -416,7 +416,7 @@ int dslist_##name##_insert_array_at(dslist_##name* self, data_type** arr, size_t
     DSList_New(name, data_type) \
     DSList_Free(name, data_type) \
     DSList_Zero_Out(name, data_type) \
-    DSLIST_Validate_Size(name, data_type) \
+    DSList_Validate_Size(name, data_type) \
     DSList_Swap(name, data_type) \
     DSList_Get_Node(name, data_type) \
     DSList_Search_Node(name, data_type) \
