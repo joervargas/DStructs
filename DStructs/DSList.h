@@ -74,7 +74,7 @@ void dslist_##name##_zero_out(dslist_##name* self) \
     self->size = 0; \
 } \
 
-#define DSLIST_Validate_Size(name, data_type) \
+#define DSList_Validate_Size(name, data_type) \
 int dslist_##name##_validate_size(dslist_##name* self, bool b_should_update) \
 { \
     int validation_status = 1; \
