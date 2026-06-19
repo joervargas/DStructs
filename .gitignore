@@ -58,3 +58,4 @@ src/
 main.c
 main.cpp
 /CMakeLists.txt
+.vscode/
