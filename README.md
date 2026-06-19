@@ -85,6 +85,7 @@ Returns a pointer to the end of an array for iteration
     for (int *it = darray_int_begin(&arr); it != darray_int_end(&arr); ++it)
         printf("%d ", *it);
     printf("\n");
+Above is an example of how to use iteration functions
 
     float* darray_f_rbegin(darray_f *self);
     float* darray_f_rend(darray_f *self);
