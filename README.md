@@ -80,6 +80,7 @@ Returns a pointer to the begining of the array for iteration
 
     float* darray_f_end(darray_f *self)
 Returns a pointer to the end of an array for iteration
+
     // Iteration example
     for (int *it = darray_int_begin(&arr); it != darray_int_end(&arr); ++it)
         printf("%d ", *it);
@@ -88,6 +89,8 @@ Returns a pointer to the end of an array for iteration
     float* darray_f_rbegin(darray_f *self);
     float* darray_f_rend(darray_f *self);
 Opposite of darray_f_begin() and darray_f_end() iterators
+
+    // Reverse Iteration example
     for (int *it = darray_int_rbegin(&arr); it != darray_int_rend(&arr); --it)
         printf("%d ", *it);
     printf("\n");
