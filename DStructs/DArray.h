@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define DARRAY_STRUCT(name, data_type) \
 typedef struct darray_##name { \
@@ -140,41 +141,41 @@ void darray_##name##_push(darray_##name *self, data_type val) \
 }
 
 #define DARRAY_POP(name, data_type) \
-int darray_##name##_pop(darray_##name *self, data_type *output) \
+bool darray_##name##_pop(darray_##name *self, data_type *output) \
 { \
-    if (!self || self->size == 0) { return 0; } /* null check and empty check */ \
+    if (!self || self->size == 0) { return false; } /* null check and empty check */ \
     if (output) { *output = self->data[self->size - 1]; } \
     self->size--; \
-    return 1; \
+    return true; \
 }
 
 
 #define DARRAY_REMOVE(name, data_type) \
-int darray_##name##_remove(darray_##name *self, size_t idx, data_type *output) \
+bool darray_##name##_remove(darray_##name *self, size_t idx, data_type *output) \
 { \
-    if (!self) { return 0; } /* null check */ \
-    if (idx >= self->size) { return 0; } \
+    if (!self) { return false; } /* null check */ \
+    if (idx >= self->size) { return false; } \
     /* return removed value */ \
     if (output) { *output = self->data[idx]; } \
     /* if last element, just shrink */ \
-    if (idx == self->size - 1) { self->size--; return 1; } \
+    if (idx == self->size - 1) { self->size--; return true; } \
     /* shift elements to the left */ \
     memmove(self->data + idx, self->data + idx + 1, (self->size - idx - 1) * sizeof(data_type)); \
     self->size--; \
-    return 1; \
+    return true; \
 }
 
 #define DARRAY_INSERT(name, data_type) \
-int darray_##name##_insert(darray_##name *self, size_t idx, data_type val) \
+bool darray_##name##_insert(darray_##name *self, size_t idx, data_type val) \
 { \
-    if (!self) { return 0; } /* null check */ \
-    if ( idx > self->size) { return 0; } /* out of bounds check */ \
+    if (!self) { return false; } /* null check */ \
+    if ( idx > self->size) { return false; } /* out of bounds check */ \
     /* grow if needed */ \
     if (self->size == self->capacity) \
     { \
         size_t new_capacity = self->capacity ? self->capacity * 2 : 8; \
         data_type* new_data = realloc(self->data, new_capacity * sizeof(data_type)); \
-        if(!new_data) { return 0; } \
+        if(!new_data) { return false; } \
         self->data = new_data; \
         self->capacity = new_capacity; \
     } \
@@ -183,7 +184,7 @@ int darray_##name##_insert(darray_##name *self, size_t idx, data_type val) \
     /* insert the new value */ \
     self->data[idx] = val; \
     self->size += 1; \
-    return 1; \
+    return true; \
 }
 
 #define DARRAY_APPEND(name, data_type) \
@@ -207,21 +208,21 @@ void darray_##name##_append(darray_##name *self, data_type *values, size_t count
 }
 
 #define DARRAY_SLICE(name, data_type) \
-int darray_##name##_slice(darray_##name *self, size_t first_idx, data_type *slice, size_t slice_size) \
+bool darray_##name##_slice(darray_##name *self, size_t first_idx, data_type *slice, size_t slice_size) \
 { \
-    if (!self || !slice) return 0; \
-    if (first_idx + slice_size > self->size) return 0; \
+    if (!self || !slice) return false; \
+    if (first_idx + slice_size > self->size) return false; \
     memcpy(slice, self->data + first_idx, slice_size * sizeof(data_type)); \
-    return 1; \
+    return true; \
 }
 
 #define DARRAY_SLICE_INSERT(name, data_type) \
-int darray_##name##_slice_insert(darray_##name *self, size_t first_idx, data_type *slice, size_t slice_size) \
+bool darray_##name##_slice_insert(darray_##name *self, size_t first_idx, data_type *slice, size_t slice_size) \
 { \
-    if (!self || !slice) { return 0; } \
-    if ( first_idx > self->size) { return 0; } \
+    if (!self || !slice) { return false; } \
+    if ( first_idx > self->size) { return false; } \
     /* if inserting at the end, just append */ \
-    if (first_idx == (self->size)) { darray_##name##_append(self, slice, slice_size); return 1; } \
+    if (first_idx == (self->size)) { darray_##name##_append(self, slice, slice_size); return true; } \
     /* grow if needed */ \
     size_t required_capacity = self->size + slice_size; \
     if(required_capacity > self->capacity) \
@@ -229,7 +230,7 @@ int darray_##name##_slice_insert(darray_##name *self, size_t first_idx, data_typ
         size_t new_capacity = self->capacity ? self->capacity * 2 : 8; \
         while(new_capacity < required_capacity) { new_capacity *= 2; } \
         data_type* new_data = realloc(self->data, new_capacity * sizeof(data_type)); \
-        if(!new_data) { return 0; } \
+        if(!new_data) { return false; } \
         self->data = new_data; \
         self->capacity = new_capacity; \
     }\
@@ -238,21 +239,21 @@ int darray_##name##_slice_insert(darray_##name *self, size_t first_idx, data_typ
     /* insert the new values */ \
     memcpy(self->data + first_idx, slice, slice_size * sizeof(data_type)); \
     self->size += slice_size; \
-    return 1; \
+    return true; \
 }
 
 #define DARRAY_SLICE_REMOVE(name, data_type) \
-int darray_##name##_slice_remove(darray_##name *self, size_t first_idx, data_type* slice, size_t slice_size) \
+bool darray_##name##_slice_remove(darray_##name *self, size_t first_idx, data_type* slice, size_t slice_size) \
 { \
-    if(!self) { return 0; } \
-    if(first_idx >= self->size) { return 0; } \
-    if(slice_size == 0 || first_idx + slice_size > self->size) { return 0; } \
+    if(!self) { return false; } \
+    if(first_idx >= self->size) { return false; } \
+    if(slice_size == 0 || first_idx + slice_size > self->size) { return false; } \
     /* copy the slice to output if provided */ \
     if(slice) { memcpy(slice, self->data + first_idx, slice_size * sizeof(data_type)); } \
     /* shift elements to the left */ \
     memmove(self->data + first_idx, self->data + first_idx + slice_size, (self->size - first_idx - slice_size) * sizeof(data_type)); \
     self->size -= slice_size; \
-    return 1; \
+    return true; \
 }
 
 #define DARRAY_DECLARE(name, data_type) \
